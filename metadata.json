@@ -1,0 +1,6 @@
+{
+  "name": "اسپورتاوند | Sportavand — سامانه جامع مدیریت ورزش",
+  "description": "اسپورتاوند (Sportavand) — از سامان تا اوج. سامانه جامع و ماژولار مدیریت هوشمند باشگاه‌ها، تیم‌ها، ورزشکاران، رویدادها و فرآیندهای ورزشی با ماژول تخصصی اسپورتاوند بسکتبال (Sportavand Basketball)",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
