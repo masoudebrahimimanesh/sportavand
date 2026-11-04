@@ -53,14 +53,15 @@ class Sportavand_Shortcodes {
 
         ob_start();
         ?>
-        <div class="spv-app-container spv-theme-<?php echo esc_attr($a['theme']); ?>" dir="rtl">
+        <div id="spv-wp-shell" class="spv-app-container spv-scope spv-theme-<?php echo esc_attr($a['theme']); ?>" dir="rtl">
             <div id="<?php echo esc_attr($mount_id); ?>" 
-                 class="spv-mount-target"
+                 class="spv-mount-target spv-scope"
+                 dir="rtl"
                  data-mode="intake" 
                  data-preset-id="<?php echo esc_attr($a['id']); ?>" 
                  data-category="<?php echo esc_attr($a['category']); ?>">
-                <div style="padding: 2.5rem; text-align: center; font-family: 'Vazirmatn', -apple-system, sans-serif; background: #0f172a; color: #f8fafc; border-radius: 1rem; border: 1px solid #334155;">
-                    <div style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: #f59e0b;">
+                <div style="padding: 2.5rem; text-align: center; direction: rtl; font-family: 'Vazirmatn', -apple-system, sans-serif; background: #020617; color: #f8fafc; border-radius: 1rem; border: 1px solid #1e293b;">
+                    <div style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #fbbf24;">
                         اسپورتاوند | Sportavand — سامانه ثبت‌نام الکترونیکی ورزشکاران
                     </div>
                     <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.75rem;">
@@ -97,14 +98,16 @@ class Sportavand_Shortcodes {
 
         ob_start();
         ?>
-        <div class="spv-app-container spv-theme-<?php echo esc_attr($a['theme']); ?>" dir="rtl">
+        <div id="spv-wp-shell" class="spv-app-container spv-scope spv-theme-<?php echo esc_attr($a['theme']); ?>" dir="rtl">
             <div id="<?php echo esc_attr($mount_id); ?>" 
-                 class="spv-mount-target"
+                 class="spv-mount-target spv-scope"
+                 dir="rtl"
                  data-mode="team" 
+                 data-tab="team"
                  data-team-id="<?php echo esc_attr($a['team_id']); ?>" 
                  data-category="<?php echo esc_attr($a['category']); ?>">
-                <div style="padding: 2.5rem; text-align: center; font-family: 'Vazirmatn', -apple-system, sans-serif; background: #0f172a; color: #f8fafc; border-radius: 1rem; border: 1px solid #334155;">
-                    <div style="font-size: 1.25rem; font-weight: bold; margin-bottom: 0.5rem; color: #f59e0b;">
+                <div style="padding: 2.5rem; text-align: center; direction: rtl; font-family: 'Vazirmatn', -apple-system, sans-serif; background: #020617; color: #f8fafc; border-radius: 1rem; border: 1px solid #1e293b;">
+                    <div style="font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #fbbf24;">
                         اسپورتاوند | Sportavand — فهرست اعضا و روستر رسمی مسابقات
                     </div>
                     <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">
@@ -124,6 +127,7 @@ class Sportavand_Shortcodes {
     public static function render_app_shortcode($atts) {
         $a = shortcode_atts(array(
             'mode'     => 'auto',
+            'tab'      => 'team',
             'id'       => '17',
             'team_id'  => 'default',
             'theme'    => 'dark',
@@ -135,10 +139,12 @@ class Sportavand_Shortcodes {
 
         ob_start();
         ?>
-        <div class="spv-app-container spv-theme-<?php echo esc_attr($a['theme']); ?>" dir="rtl">
+        <div id="spv-wp-shell" class="spv-app-container spv-scope spv-theme-<?php echo esc_attr($a['theme']); ?>" dir="rtl">
             <div id="<?php echo esc_attr($mount_id); ?>"
-                 class="spv-mount-target"
+                 class="spv-mount-target spv-scope"
+                 dir="rtl"
                  data-mode="<?php echo esc_attr($a['mode']); ?>"
+                 data-tab="<?php echo esc_attr($a['tab']); ?>"
                  data-preset-id="<?php echo esc_attr($a['id']); ?>"
                  data-team-id="<?php echo esc_attr($a['team_id']); ?>">
             </div>

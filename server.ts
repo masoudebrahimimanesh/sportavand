@@ -420,8 +420,21 @@ app.get('/api/download-plugin', (_req, res) => {
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: false, ws: false, watch: null },
       appType: 'spa',
+      plugins: [
+        {
+          name: 'disable-vite-client-ws',
+          transform(code, id) {
+            if (id.includes('vite/dist/client/client.mjs')) {
+              return code.replace(
+                'transport.connect(createHMRHandler(handleMessage));',
+                '/* WebSocket HMR disabled in AI Studio preview environment */'
+              );
+            }
+          },
+        },
+      ],
     });
     app.use(vite.middlewares);
   } else {

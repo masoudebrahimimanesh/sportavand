@@ -181,25 +181,39 @@ function sportavand_init() {
 \add_action('admin_menu', array(__NAMESPACE__ . '\\Sportavand_Admin', 'register_menus'));
 
 /**
- * Enqueue Frontend Scripts & Styles for Shortcodes
+ * Enqueue Frontend Scripts & Styles for Shortcodes (including Elementor pages)
  */
 function sportavand_enqueue_frontend_scripts() {
     global $post;
     $should_enqueue = false;
 
+    $shortcodes_to_check = array(
+        'sportavand_form',
+        'sportavand_roster',
+        'sportavand_app',
+        // Legacy compatibility shortcodes so existing pages never break on upgrade
+        'sportnova_form',
+        'sportnova_roster',
+    );
+
     if (is_a($post, 'WP_Post')) {
-        $shortcodes_to_check = array(
-            'sportavand_form',
-            'sportavand_roster',
-            'sportavand_app',
-            // Legacy compatibility shortcodes so existing pages never break on upgrade
-            'sportnova_form',
-            'sportnova_roster',
-        );
         foreach ($shortcodes_to_check as $sc) {
             if (has_shortcode($post->post_content, $sc)) {
                 $should_enqueue = true;
                 break;
+            }
+        }
+
+        // Also check Elementor _elementor_data postmeta so Elementor pages enqueue CSS in <head>
+        if (!$should_enqueue) {
+            $elementor_data = get_post_meta($post->ID, '_elementor_data', true);
+            if (is_string($elementor_data) && !empty($elementor_data)) {
+                foreach ($shortcodes_to_check as $sc) {
+                    if (strpos($elementor_data, $sc) !== false) {
+                        $should_enqueue = true;
+                        break;
+                    }
+                }
             }
         }
     }
@@ -211,10 +225,14 @@ function sportavand_enqueue_frontend_scripts() {
 \add_action('wp_enqueue_scripts', __NAMESPACE__ . '\\sportavand_enqueue_frontend_scripts');
 
 /**
- * Enqueue Admin Scripts & Styles for Sportavand Dashboard
+ * Enqueue Admin Scripts & Styles for all Sportavand Admin pages (including Persian submenu hooks)
  */
 function sportavand_enqueue_admin_scripts($hook) {
-    if (strpos($hook, 'sportavand') !== false) {
+    $current_page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+    if (
+        strpos((string) $hook, 'sportavand') !== false ||
+        strpos($current_page, 'sportavand') === 0
+    ) {
         sportavand_enqueue_app_assets('admin');
     }
 }
@@ -246,12 +264,28 @@ function sportavand_enqueue_app_assets($context = 'frontend') {
     if (file_exists($bundle_js_path)) {
         wp_enqueue_script('sportavand-app-js', $bundle_js, array(), $version, true);
 
+        // Determine default active tab based on WordPress Admin submenu page
+        $current_page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+        $default_tab  = 'team';
+        if ($current_page === 'sportavand-roster') {
+            $default_tab = 'player';
+        } elseif ($current_page === 'sportavand-forms') {
+            $default_tab = 'intake';
+        } elseif ($current_page === 'sportavand-database') {
+            $default_tab = 'database';
+        } elseif ($current_page === 'sportavand-migration' || $current_page === 'sportavand-docs') {
+            $default_tab = 'brand';
+        }
+
         $settings_payload = array(
             'apiUrl'        => esc_url_raw(rest_url(SPORTAVAND_REST_NAMESPACE)),
             'nonce'         => wp_create_nonce('wp_rest'),
             'siteUrl'       => get_site_url(),
             'currentUserId' => get_current_user_id(),
             'isAdmin'       => current_user_can('manage_options'),
+            'isWpAdmin'     => is_admin(),
+            'currentPage'   => $current_page,
+            'defaultTab'    => $default_tab,
             'context'       => $context,
             'pluginUrl'     => SPORTAVAND_PLUGIN_URL,
             'version'       => SPORTAVAND_VERSION,

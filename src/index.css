@@ -1,7 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
-:root {
+:root,
+.spv-scope,
+.spv-app-container,
+#spv-root,
+.spv-mount-target {
   --spv-bg-primary: #020617;
   --spv-bg-surface: #0f172a;
   --spv-border: #1e293b;
@@ -10,188 +14,255 @@
   --spv-text-primary: #f8fafc;
   --spv-text-muted: #94a3b8;
   --spv-font-sans: 'Vazirmatn', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Tahoma, sans-serif;
-  --spv-font-mono: 'JetBrains Mono', monospace;
-}
-
-@layer base {
-  body {
-    font-family: var(--spv-font-sans);
-  }
-  code, pre, .font-mono {
-    font-family: var(--spv-font-mono);
-  }
+  --spv-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--spv-font-sans);
+  --font-mono: var(--spv-font-mono);
 }
 
 /* ==========================================================================
-   WordPress, Elementor & Theme CSS Isolation & Reset (spv-* & --spv-*)
-   Ensures Sportavand looks pristine and pixel-perfect in all WordPress themes
-   without font or size corruption from Elementor or theme typography.
-   Includes backward-compatible selectors for upgraded pages.
+   Sportavand RTL & WordPress / Elementor Harmonization Layer (spv-* & --spv-*)
+   Ensures 100% identical visual rendering across:
+   1. AI Studio Preview (#root.spv-scope)
+   2. WordPress Admin Dashboard (body.wp-admin #spv-wp-shell.spv-scope)
+   3. WordPress Frontend Shortcodes & Elementor (.spv-app-container.spv-scope)
    ========================================================================== */
 
+/* 1. Root Container Isolation (RTL, Dark Canvas, Font Family, Box Model) */
+.spv-scope,
 .spv-app-container,
 #spv-root,
 .spv-mount-target,
 div[id^="spv-root"],
 .sportnova-app-container,
 #sportnova-root,
-.sportnova-mount-target,
-div[id^="sportnova-root"] {
+.sportnova-mount-target {
   direction: rtl !important;
   text-align: right !important;
   color-scheme: dark !important;
   font-family: var(--spv-font-sans) !important;
-  background-color: var(--spv-bg-primary) !important;
-  color: var(--spv-text-primary) !important;
+  background-color: var(--spv-bg-primary);
+  color: var(--spv-text-primary);
   box-sizing: border-box !important;
-  line-height: 1.6 !important;
+  line-height: 1.5;
   letter-spacing: normal !important;
-  margin: 1.5rem auto !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  font-feature-settings: normal !important;
+  text-transform: none !important;
+}
+
+/* 2. Frontend Shortcode Container Wrapper (Elementor / Block Theme / Classic Theme) */
+body:not(.wp-admin) .spv-app-container,
+body:not(.wp-admin) .sportnova-app-container {
+  width: 100% !important;
   max-width: 1280px !important;
+  margin: 1.5rem auto !important;
   border-radius: 1.25rem !important;
   border: 1px solid var(--spv-border) !important;
-  overflow: hidden !important;
-  box-shadow: 0 20px 25px -5px rgba(2, 6, 23, 0.6), 0 8px 10px -6px rgba(2, 6, 23, 0.6) !important;
+  background-color: var(--spv-bg-primary) !important;
+  box-shadow: 0 20px 30px -10px rgba(2, 6, 23, 0.7) !important;
+  overflow: visible !important;
+  position: relative !important;
 }
 
-/* Hard reset for all elements inside Sportavand */
+/* Break out of narrow WordPress block theme (.is-layout-constrained) constraints when needed */
+.entry-content > .spv-app-container,
+.page-content > .spv-app-container,
+.elementor-shortcode > .spv-app-container {
+  max-width: 1280px !important;
+  width: 100% !important;
+}
+
+/* 3. WordPress Admin Dashboard Wrapper Harmonization (RTL wp-admin) */
+body.wp-admin #wpbody-content .spv-admin-wrap {
+  direction: rtl !important;
+  text-align: right !important;
+  margin: 16px 0 24px 16px !important;
+  padding: 0 !important;
+  max-width: calc(100% - 16px) !important;
+  width: calc(100% - 16px) !important;
+  border-radius: 1rem !important;
+  border: 1px solid var(--spv-border) !important;
+  background-color: var(--spv-bg-primary) !important;
+  box-shadow: 0 20px 30px -10px rgba(2, 6, 23, 0.65) !important;
+  overflow: visible !important;
+}
+
+body.rtl.wp-admin #wpbody-content .spv-admin-wrap {
+  margin: 16px 0 24px 16px !important;
+}
+
+/* Hide stray WordPress admin notices from breaking the top of the Sportavand portal */
+body.wp-admin .spv-admin-wrap > .notice,
+body.wp-admin .spv-admin-wrap > .updated,
+body.wp-admin .spv-admin-wrap > .error {
+  margin: 12px 16px !important;
+}
+
+/* Offset sticky header when WordPress Admin Bar (#wpadminbar) is visible */
+body.admin-bar .spv-sticky-header {
+  top: 32px !important;
+}
+@media screen and (max-width: 782px) {
+  body.admin-bar .spv-sticky-header {
+    top: 46px !important;
+  }
+}
+
+/* 4. Universal Font Family & Box-Sizing Lock inside Sportavand */
+.spv-scope *,
+.spv-scope *::before,
+.spv-scope *::after,
 .spv-app-container *,
 #spv-root *,
-.spv-mount-target *,
-.sportnova-app-container *,
-#sportnova-root *,
-.sportnova-mount-target * {
+.spv-mount-target * {
   box-sizing: border-box !important;
   font-family: var(--spv-font-sans) !important;
-}
-
-/* STRICT HEADING RESETS - Neutralize Elementor/theme 100px/70px overrides */
-.spv-app-container h1, #spv-root h1, .spv-mount-target h1,
-.spv-app-container .h1, #spv-root .h1, .spv-mount-target .h1,
-.sportnova-app-container h1, #sportnova-root h1, .sportnova-mount-target h1 {
-  font-size: 1.35rem !important;
-  line-height: 1.85rem !important;
-  font-weight: 800 !important;
-  color: #ffffff !important;
-  margin: 0 !important;
-  padding: 0 !important;
   letter-spacing: normal !important;
 }
 
-.spv-app-container h2, #spv-root h2, .spv-mount-target h2,
-.spv-app-container .h2, #spv-root .h2, .spv-mount-target .h2,
-.sportnova-app-container h2, #sportnova-root h2, .sportnova-mount-target h2 {
-  font-size: 1.15rem !important;
-  line-height: 1.65rem !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  letter-spacing: normal !important;
-}
-
-.spv-app-container h3, #spv-root h3, .spv-mount-target h3,
-.spv-app-container .h3, #spv-root .h3, .spv-mount-target .h3,
-.sportnova-app-container h3, #sportnova-root h3, .sportnova-mount-target h3 {
-  font-size: 1.025rem !important;
-  line-height: 1.5rem !important;
-  font-weight: 700 !important;
-  color: #f1f5f9 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.spv-app-container h4, #spv-root h4, .spv-mount-target h4,
-.sportnova-app-container h4, #sportnova-root h4, .sportnova-mount-target h4 {
-  font-size: 0.925rem !important;
-  line-height: 1.35rem !important;
-  font-weight: 600 !important;
-  color: #e2e8f0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.spv-app-container p, #spv-root p, .spv-mount-target p,
-.sportnova-app-container p, #sportnova-root p, .sportnova-mount-target p {
-  font-size: 0.85rem !important;
-  line-height: 1.55rem !important;
-  color: var(--spv-text-muted) !important;
-  margin: 0 !important;
-}
-
-/* Explicit size locks for Tailwind utility classes against theme overrides */
-.spv-app-container .text-xs, #spv-root .text-xs, .spv-mount-target .text-xs {
-  font-size: 0.75rem !important;
-  line-height: 1rem !important;
-}
-.spv-app-container .text-sm, #spv-root .text-sm, .spv-mount-target .text-sm {
-  font-size: 0.875rem !important;
-  line-height: 1.25rem !important;
-}
-.spv-app-container .text-base, #spv-root .text-base, .spv-mount-target .text-base {
-  font-size: 1rem !important;
-  line-height: 1.5rem !important;
-}
-.spv-app-container .text-lg, #spv-root .text-lg, .spv-mount-target .text-lg {
-  font-size: 1.125rem !important;
-  line-height: 1.65rem !important;
-}
-.spv-app-container .text-xl, #spv-root .text-xl, .spv-mount-target .text-xl {
-  font-size: 1.25rem !important;
-  line-height: 1.75rem !important;
-}
-.spv-app-container .text-2xl, #spv-root .text-2xl, .spv-mount-target .text-2xl {
-  font-size: 1.45rem !important;
-  line-height: 1.95rem !important;
-}
-.spv-app-container .text-3xl, #spv-root .text-3xl, .spv-mount-target .text-3xl {
-  font-size: 1.75rem !important;
-  line-height: 2.25rem !important;
-}
-
-/* High contrast utility locks against WP admin/theme CSS leakage */
-.spv-app-container .text-white, #spv-root .text-white { color: #ffffff !important; }
-.spv-app-container .text-slate-100, #spv-root .text-slate-100 { color: #f1f5f9 !important; }
-.spv-app-container .text-slate-200, #spv-root .text-slate-200 { color: #e2e8f0 !important; }
-.spv-app-container .text-slate-300, #spv-root .text-slate-300 { color: #cbd5e1 !important; }
-.spv-app-container .text-slate-400, #spv-root .text-slate-400 { color: #94a3b8 !important; }
-.spv-app-container .text-amber-400, #spv-root .text-amber-400 { color: #fbbf24 !important; }
-.spv-app-container .text-amber-300, #spv-root .text-amber-300 { color: #fcd34d !important; }
-.spv-app-container .text-emerald-400, #spv-root .text-emerald-400 { color: #34d399 !important; }
-.spv-app-container .text-sky-400, #spv-root .text-sky-400 { color: #38bdf8 !important; }
-.spv-app-container .text-indigo-400, #spv-root .text-indigo-400 { color: #818cf8 !important; }
-.spv-app-container .text-rose-400, #spv-root .text-rose-400 { color: #fb7185 !important; }
-
-/* Form inputs & buttons reset */
-.spv-app-container input,
-#spv-root input,
-.spv-mount-target input,
-.spv-app-container select,
-#spv-root select,
-.spv-mount-target select,
-.spv-app-container textarea,
-#spv-root textarea,
-.spv-mount-target textarea {
-  font-family: var(--spv-font-sans) !important;
-  font-size: 0.875rem !important;
-  line-height: 1.25rem !important;
-  box-sizing: border-box !important;
-  border-radius: 0.75rem !important;
-}
-
-.spv-app-container button,
-#spv-root button,
-.spv-mount-target button {
-  font-family: var(--spv-font-sans) !important;
-  font-size: 0.85rem !important;
-  cursor: pointer !important;
-  box-sizing: border-box !important;
-}
-
+.spv-scope code,
+.spv-scope pre,
+.spv-scope kbd,
+.spv-scope samp,
+.spv-scope .font-mono,
+.spv-scope .font-mono *,
 .spv-app-container code,
-#spv-root code,
-.spv-mount-target code {
+.spv-app-container pre,
+.spv-app-container .font-mono,
+.spv-app-container .font-mono * {
   font-family: var(--spv-font-mono) !important;
-  color: #fbbf24 !important;
-  background-color: #0b1120 !important;
+}
+
+/* 5. High-Specificity Non-Important Element Reset
+   Beats WordPress (#wpbody-content h2, #wpbody select, input[type="text"], .entry-content p, .elementor h1)
+   while allowing ALL Tailwind utility classes (which carry !important) to win cleanly! */
+#spv-wp-shell.spv-scope h1,
+#spv-wp-shell.spv-scope h2,
+#spv-wp-shell.spv-scope h3,
+#spv-wp-shell.spv-scope h4,
+#spv-wp-shell.spv-scope h5,
+#spv-wp-shell.spv-scope h6,
+#spv-wp-shell.spv-scope p,
+#spv-wp-shell.spv-scope ul,
+#spv-wp-shell.spv-scope ol,
+#spv-wp-shell.spv-scope li,
+#spv-wp-shell.spv-scope dl,
+#spv-wp-shell.spv-scope dd,
+#spv-wp-shell.spv-scope blockquote,
+#spv-wp-shell.spv-scope figure,
+.spv-scope.spv-scope.spv-scope h1,
+.spv-scope.spv-scope.spv-scope h2,
+.spv-scope.spv-scope.spv-scope h3,
+.spv-scope.spv-scope.spv-scope h4,
+.spv-scope.spv-scope.spv-scope h5,
+.spv-scope.spv-scope.spv-scope h6,
+.spv-scope.spv-scope.spv-scope p,
+.spv-scope.spv-scope.spv-scope ul,
+.spv-scope.spv-scope.spv-scope ol,
+.spv-scope.spv-scope.spv-scope li,
+.spv-scope.spv-scope.spv-scope dl,
+.spv-scope.spv-scope.spv-scope dd,
+.spv-scope.spv-scope.spv-scope blockquote,
+.spv-scope.spv-scope.spv-scope figure {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0 solid var(--spv-border);
+  list-style: none;
+  text-transform: none;
+}
+
+#spv-wp-shell.spv-scope a,
+.spv-scope.spv-scope.spv-scope a {
+  color: inherit;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+#spv-wp-shell.spv-scope table,
+.spv-scope.spv-scope.spv-scope table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  background: transparent;
+  border: 0 solid var(--spv-border);
+  margin: 0;
+}
+
+#spv-wp-shell.spv-scope th,
+#spv-wp-shell.spv-scope td,
+.spv-scope.spv-scope.spv-scope th,
+.spv-scope.spv-scope.spv-scope td {
+  text-align: right;
+  vertical-align: middle;
+  border-color: var(--spv-border);
+  background: transparent;
+}
+
+/* 6. WordPress & Elementor Form Controls Neutralization (Inputs, Selects, Textareas, Buttons)
+   Prevents WP forms.min.css / buttons.min.css from turning dark inputs white or shrinking padding */
+#spv-wp-shell.spv-scope input:not([type="checkbox"]):not([type="radio"]),
+#spv-wp-shell.spv-scope select,
+#spv-wp-shell.spv-scope textarea,
+.spv-scope.spv-scope.spv-scope input:not([type="checkbox"]):not([type="radio"]),
+.spv-scope.spv-scope.spv-scope select,
+.spv-scope.spv-scope.spv-scope textarea {
+  background-color: #020617;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  min-height: 0 !important;
+  height: auto;
+  max-width: 100%;
+  box-shadow: none !important;
+  outline: none;
+  margin: 0;
+}
+
+#spv-wp-shell.spv-scope select,
+.spv-scope.spv-scope.spv-scope select {
+  background-image: none;
+  padding-left: 2rem;
+}
+
+#spv-wp-shell.spv-scope button,
+.spv-scope.spv-scope.spv-scope button {
+  background-color: transparent;
+  color: inherit;
+  border: 0 solid var(--spv-border);
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+  box-shadow: none;
+  text-shadow: none !important;
+  min-height: 0 !important;
+  cursor: pointer;
+}
+
+#spv-wp-shell.spv-scope img,
+#spv-wp-shell.spv-scope svg,
+.spv-scope.spv-scope.spv-scope img,
+.spv-scope.spv-scope.spv-scope svg {
+  display: block;
+  max-width: 100%;
+  vertical-align: middle;
+}
+
+/* Custom utility for horizontal tab bar scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }

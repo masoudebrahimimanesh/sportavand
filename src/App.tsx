@@ -62,6 +62,7 @@ import {
 
 export interface AppProps {
   initialMode?: 'auto' | 'intake' | 'team' | 'admin' | string;
+  initialTab?: 'team' | 'player' | 'intake' | 'plugin' | 'brain' | 'database' | 'brand' | '';
   presetId?: string;
   teamId?: string;
 }
@@ -79,7 +80,7 @@ export function isValidIranianNationalCode(code: string): boolean {
   return (remainder < 2 && check === remainder) || (remainder >= 2 && check === 11 - remainder);
 }
 
-export default function App({ initialMode = 'auto', presetId = '17', teamId = 'default' }: AppProps = {}) {
+export default function App({ initialMode = 'auto', initialTab = '', presetId = '17', teamId = 'default' }: AppProps = {}) {
   // Environment Detection: Is running inside WordPress runtime or AI Studio developer preview?
   const isWpRuntime = typeof window !== 'undefined' && (
     Boolean((window as any).sportavandSettings) ||
@@ -110,8 +111,16 @@ export default function App({ initialMode = 'auto', presetId = '17', teamId = 'd
   const [envMode, setEnvMode] = useState<'wordpress' | 'aistudio'>(isWpRuntime ? 'wordpress' : 'aistudio');
 
   // Navigation Tabs
+  const resolvedDefaultTab = (
+    initialTab && ['team', 'player', 'intake', 'plugin', 'brain', 'database', 'brand'].includes(initialTab)
+      ? initialTab
+      : isWpRuntime
+      ? 'team'
+      : 'plugin'
+  ) as 'team' | 'player' | 'intake' | 'plugin' | 'brain' | 'database' | 'brand';
+
   const [activeTab, setActiveTab] = useState<'team' | 'player' | 'intake' | 'plugin' | 'brain' | 'database' | 'brand'>(
-    isWpRuntime ? 'team' : 'plugin'
+    resolvedDefaultTab
   );
   const [copiedPluginShortcode, setCopiedPluginShortcode] = useState<string>('');
   const [showPlayerRegisterSimulator, setShowPlayerRegisterSimulator] = useState<boolean>(false);
@@ -610,7 +619,7 @@ export default function App({ initialMode = 'auto', presetId = '17', teamId = 'd
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans" dir="rtl">
+    <div className="spv-scope spv-portal-root min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans" dir="rtl">
       {/* Non-blocking status notification toast */}
       {statusMessage && (
         <div className="fixed bottom-5 left-5 z-50 bg-slate-900 border border-amber-500/50 text-amber-300 px-4 py-3 rounded-xl shadow-2xl text-xs font-bold flex items-center gap-2">
@@ -620,7 +629,7 @@ export default function App({ initialMode = 'auto', presetId = '17', teamId = 'd
       )}
 
       {/* Top Header */}
-      <header className="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+      <header className="spv-sticky-header border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-amber-500/20">
